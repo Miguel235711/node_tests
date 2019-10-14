@@ -1,0 +1,128 @@
+<!--HTML table list-->
+<table class='table' title="People">
+    <thead class='p-3 mb-2 bg-primary text-white'>
+        <tr>
+            <th scope='col'>Name</th>
+            <th scope='col'>Age</th>
+            <th scope='col'></th>
+        </tr>
+    </thead>
+    <tbody id = 'listBody'class="p-3 mb-2 bg-secondary text-white">
+        <%people.forEach(function(person){ %>
+            <tr class='personFrontID<%=person.name%>'>
+                <td>
+                    <!--Name-->
+                    <%=person.name%>
+                </td>
+                <td>
+                    <!--Age-->
+                    <%=person.age%>
+                </td>
+                <td>
+                    <!--remove button-->
+                    <input type='button' class='btn p-3 mb-2 bg-danger text-white personFrontID<%=person.name%>' value='Remove'/>
+                </td>
+            </tr>
+        <%})%>
+    </tbody>
+</table>
+<%-include('submit')%>
+<!--Action Handlers-->
+<script>
+    ///page positioning function
+    const listElementClassStr = "btn p-3 mb-2 bg-danger text-white personFrontID";
+    function sendToBottom(){
+        $("html, body").animate({ scrollTop: $(document).height()-$(window).height() });
+    }
+    ///trigger functions
+    function triggerErrorLog(x){
+        $('#errorLog').html(x);
+        $('#successLog').hide();
+        $('#errorLog').show();
+        sendToBottom();
+        isLogCollapse=false;
+    }
+    function triggerSuccessLog(x){
+        $('#successLog').html(x);
+        $('#errorLog').hide();
+        $('#successLog').show();
+        sendToBottom();
+        isLogCollapse=false;
+    }
+    ///submit handler
+    $('#submit').click(()=>{
+        ///update table
+        let name = $('#name').val();
+        let age = $('#age').val();
+        let person = {name:name,age:age};
+        if(isNaN(age)||age<0){///when no valid number 
+            $('#errorLog').empty();///clear any log
+            $('#age').empty();///empty age field because it is no valid
+            triggerErrorLog('Age is no valid, please enter an integer number from 0 to 150!');///append log
+        }else{
+        //alert(JSON.stringify(person));
+            ///send new person to be added to the backend
+            $.ajax({
+                type:'POST',
+                url: "http://localhost:3000/api/insertPerson",
+                contentType: 'application/json',
+                data : JSON.stringify(person),
+                cache : false,
+                success : function (result){ 
+                ///alert('added succesfully');
+                    ///append new element to view
+                    $("#listBody").append(
+                        "<tr class='personFrontID"+name+"'>"+///table row opening
+                        '<td>'+name+'</td>'+///name row
+                        '<td>'+age+'</td>'+///age column
+                        "<td><input type='button' class='"+listElementClassStr+name+"'value='Remove'/></td>" ///remove enclosure
+                        +'</tr>' ///table row enclosure
+                    );
+                    triggerSuccessLog('Person pushed successfully');
+                },
+                error: function (result,status,err){
+                    triggerErrorLog('That name is already in usage!!!!');
+                }
+            });
+        }
+    });
+    ///log handler when one field is modified
+    function collapseF(){
+        ///alert(isLogCollapse);
+        if(!isLogCollapse){///as it is shown and user is modifying textareas, collapse it
+            $('#errorLog').hide();///collapse it
+            $('#successLog').hide();
+            isLogCollapse=false;///change flag value
+        }   
+    }
+    var isLogCollapse = true;   
+    ///handle list clicking
+    $('#listBody').click((list)=>{
+        ///list.target is element clicked
+        ////could be possible to divide different possible responses
+        if(list.target.className!=""){///to be removed element
+            ///invoke back API to erase
+            ///create person string json object
+            let name = list.target.className.replace(listElementClassStr,'');
+            let person = {name:name};///BAD PRACTICE, fix later
+            ///ajax delete request
+            $.ajax({
+                type:'DELETE',
+                url: "http://localhost:3000/api/deletePerson",
+                contentType: 'application/json',
+                data : JSON.stringify(person),
+                cache : false,
+                success : function (result){ 
+                ///alert('added succesfully');
+                    ///remove element from front
+                    $('.personFrontID'+name)/*.closest('tr')*/.remove();///remove from front
+                    triggerSuccessLog('Person erased successfully');
+                },
+                error: function (result,status,err){
+                    triggerErrorLog('Internal Error!!!!');
+                }
+            });
+           
+        }
+    });
+</script>

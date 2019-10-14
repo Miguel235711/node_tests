@@ -1,0 +1,55 @@
+<!--button to open modal-->
+<button type="button" class="logRefreshers btn btn-primary" data-toggle="modal" data-target="#myModal">
+    Add
+</button>
+<!-- The Modal -->
+<div class="modal" id="myModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Add Person</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+  
+        <!-- Modal body -->
+        <div class="modal-body">
+            <!--input fields-->
+            <form onsubmit="event.preventDefault()">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="name" class="logRefreshers form-control" id="name" aria-describedby="emailHelp" placeholder="Enter Full Name">
+                </div>
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="age" class="logRefreshers form-control" id="age" aria-describedby="emailHelp" placeholder="Enter Your Age">
+                </div>
+                <button id='submit' class='btn p-3 mb-2 bg-success text-white'> Add</button>
+                <button id='clear' class='btn p-3 mb-2 bg-warning text-dark'>Clear</button>
+                <small id="disclaimer" class="form-text text-muted">We'll never share your information.</small>
+                <script>
+                    $("#clear").click(()=>{///clear text fields
+                        $('#name').val('');
+                        $('#age').val('');
+                    });
+                </script>
+            </form>
+        </div>
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+        </div>
+        <!--Logs-->
+        <div id="errorLog" class="alert alert-danger" style="display: none;"role="alert" ></div>
+        <div id="successLog" class="alert alert-success" style="display: none;"role="alert"></div>
+        <!--reaction to user clicking-->
+      </div>
+    </div>
+</div>
+<!--reaction to user clicking to HIDE logs-->
+<script>
+    $('.logRefreshers').click(()=>{
+        collapseF();
+    });
+</script>
