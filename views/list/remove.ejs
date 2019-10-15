@@ -1,0 +1,31 @@
+<!-- The Modal -->
+<div class="modal" id="removeModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+  
+        <!-- Modal Header -->
+        <div class="modal-header">
+          <h4 class="modal-title">Remove Person</h4>
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        
+        <!-- Modal body -->
+        <div class="modal-body">
+            <!--remove button-->
+            <div class="alert alert-warning" id="removingAlertPersonName" role="alert">
+            </div>
+            <button id="removeModalBtn" type="button" class="btn btn-danger">
+                Remove
+            </button>
+        </div>
+        <!-- Modal footer -->
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+        <!--Logs-->
+        <div id="errorLog" class="alert alert-danger" style="display: none;"role="alert" ></div>
+        <div id="successLog" class="alert alert-success" style="display: none;"role="alert"></div>
+        <!--reaction to user clicking-->
+      </div>
+    </div>
+</div>

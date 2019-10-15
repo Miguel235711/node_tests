@@ -14,7 +14,7 @@ var personSchema = new Schema({
 // why is the collection called "users"? Is that the default or did I do something?
 module.exports = mongoose.model('person', personSchema);
 
-/*personSchema.methods.standardizeName = function() {
+/*personSchema.m  yethods.standardizeName = function() {
     this.name = this.name.toLowerCase();
     return this.name;
 }*/

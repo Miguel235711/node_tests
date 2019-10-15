@@ -1,5 +1,7 @@
 <!--HTML table list-->
+<!--Bug of names with spaces-->
 <table class='table' title="People">
+    <caption>People List</caption>
     <thead class='p-3 mb-2 bg-primary text-white'>
         <tr>
             <th scope='col'>Name</th>
@@ -9,7 +11,7 @@
     </thead>
     <tbody id = 'listBody'class="p-3 mb-2 bg-secondary text-white">
         <%people.forEach(function(person){ %>
-            <tr class='personFrontID<%=person.name%>'>
+            <tr>
                 <td>
                     <!--Name-->
                     <%=person.name%>
@@ -20,17 +22,18 @@
                 </td>
                 <td>
                     <!--remove button-->
-                    <input type='button' class='btn p-3 mb-2 bg-danger text-white personFrontID<%=person.name%>' value='Remove'/>
+                    <input type='button' id = 'personFrontID<%=person.name%>' data-toggle='modal' data-target='#removeModal' class='btn p-3 mb-2 bg-danger text-white' value='Remove'/>
                 </td>
             </tr>
         <%})%>
     </tbody>
 </table>
 <%-include('submit')%>
+<%-include('remove')%>
 <!--Action Handlers-->
 <script>
     ///page positioning function
-    const listElementClassStr = "btn p-3 mb-2 bg-danger text-white personFrontID";
+    const listElementClassStr = "btn p-3 mb-2 bg-danger text-white";
     function sendToBottom(){
         $("html, body").animate({ scrollTop: $(document).height()-$(window).height() });
     }
@@ -55,7 +58,7 @@
         let name = $('#name').val();
         let age = $('#age').val();
         let person = {name:name,age:age};
-        if(isNaN(age)||age<0){///when no valid number 
+        if(isNaN(age)||age<0||age>150){///when no valid number 
             $('#errorLog').empty();///clear any log
             $('#age').empty();///empty age field because it is no valid
             triggerErrorLog('Age is no valid, please enter an integer number from 0 to 150!');///append log
@@ -75,7 +78,7 @@
                         "<tr class='personFrontID"+name+"'>"+///table row opening
                         '<td>'+name+'</td>'+///name row
                         '<td>'+age+'</td>'+///age column
-                        "<td><input type='button' class='"+listElementClassStr+name+"'value='Remove'/></td>" ///remove enclosure
+                        "<td><input type='button'id='personFrontID" + name + "' data-toggle='modal' data-target='#removeModal' class='"+listElementClassStr+"'value='Remove'/></td>" ///remove enclosure
                         +'</tr>' ///table row enclosure
                     );
                     triggerSuccessLog('Person pushed successfully');
@@ -97,14 +100,27 @@
     }
     var isLogCollapse = true;   
     ///handle list clicking
+    var lastName = "";
     $('#listBody').click((list)=>{
+        //alert('list clicked');
         ///list.target is element clicked
-        ////could be possible to divide different possible responses
-        if(list.target.className!=""){///to be removed element
+        ////save for future use on $('#removeModalBtn')
+        //alert('list remove button '+list.target.id);
+        lastName=list.target.id.replace('personFrontID','');
+        ///alert('raw lastListTargarClassName'+lastElement);
+        //alert('list remove button pressed: ' + lastName);
+        ///alert('name:'+lastName);
+        if(lastName!="")
+            $("#removingAlertPersonName").empty();
+            $("#removingAlertPersonName").append('Are you sure of removing person '+lastName+' ?');
+    });
+    $('#removeModalBtn').click(()=>{   
+        //alert('remove modal button and lastListTargetElementClassName: ' + lastName);
+        if(lastName!=""){///to be removed element
             ///invoke back API to erase
             ///create person string json object
-            let name = list.target.className.replace(listElementClassStr,'');
-            let person = {name:name};///BAD PRACTICE, fix later
+            //alert("to be removed before with ajax"+lastName);
+            let person = {name:lastName};///BAD PRACTICE, fix later
             ///ajax delete request
             $.ajax({
                 type:'DELETE',
@@ -115,14 +131,17 @@
                 success : function (result){ 
                 ///alert('added succesfully');
                     ///remove element from front
-                    $('.personFrontID'+name)/*.closest('tr')*/.remove();///remove from front
-                    triggerSuccessLog('Person erased successfully');
+                    $("#removeModal").trigger({ type: "click" });///close remove modal
+                    //alert('to be erased'+'#personFrontID'+lastName);
+                    alert('after success from ajax delete #personFrontID'+lastName);
+                    $('#personFrontID'+lastName).parent().parent()/*.clos est('tr')*/.remove();///remove from front////it is not working
+                    lastName="";
                 },
                 error: function (result,status,err){
                     triggerErrorLog('Internal Error!!!!');
+                    lastName="";
                 }
             });
-           
         }
     });
 </script>
